@@ -1,25 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { fetchNotes } from "./redux/slices/notes";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
 
 function App() {
-  
+  const dispatch = useAppDispatch();
+  const notes = useAppSelector((state) => state.note)
+
+  React.useEffect(() => {
+    dispatch(fetchNotes());
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {notes.items.map(n => <div>{n.title}</div>)}
     </div>
   );
 }

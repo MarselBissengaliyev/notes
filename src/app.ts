@@ -3,8 +3,12 @@ import express, { NextFunction, Request, Response } from "express";
 import noteRoutes from "./routes/notes";
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
+import cors from "cors";
+import env from "./util/validateEnv";
 
 const app = express();
+
+app.use(cors({ origin: env.CLIENT_URL }));
 
 app.use(morgan("dev"));
 
