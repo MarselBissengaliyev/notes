@@ -6,34 +6,47 @@ import * as NotesApi from "../../network/notes_api";
 import { Note } from "../../models/note";
 
 type Props = {
+  noteToEdit?: Note;
   onDismiss: () => void;
-  onNoteSaved: () => void;
+  onNoteSaved: (note: Note) => void;
 };
 
-const AddNoteDialog = ({ onDismiss, onNoteSaved }: Props) => {
+const AddEditNoteDialog = ({ noteToEdit, onDismiss, onNoteSaved }: Props) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<NoteInput>();
+  } = useForm<NoteInput>({
+    defaultValues: {
+      title: noteToEdit?.title || "",
+      text: noteToEdit?.text || "",
+    },
+  });
 
   const onSubmit = async (input: NoteInput) => {
     try {
-      await NotesApi.createNote(input);
-      onNoteSaved();
+      let noteResponse: Note;
+      if (noteToEdit) {
+        noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
+      } else {
+        noteResponse = await NotesApi.createNote(input);
+      }
+      onNoteSaved(noteResponse);
     } catch (error) {
       console.log(error);
       alert(error);
     }
-  };    
+  };
   return (
     <Modal show onHide={onDismiss}>
       <Modal.Header closeButton>
-        <Modal.Title>Add Note</Modal.Title>
+        <Modal.Title>
+          {noteToEdit ? 'Edit note' : 'Add note'}
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Form id="addNoteForm" onSubmit={handleSubmit(onSubmit)}>
+        <Form id="addEditNoteForm" onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3">
             <Form.Label>Title</Form.Label>
             <Form.Control
@@ -59,7 +72,7 @@ const AddNoteDialog = ({ onDismiss, onNoteSaved }: Props) => {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit" form="addNoteForm" disabled={isSubmitting}>
+        <Button type="submit" form="addEditNoteForm" disabled={isSubmitting}>
           Save
         </Button>
       </Modal.Footer>
@@ -67,4 +80,4 @@ const AddNoteDialog = ({ onDismiss, onNoteSaved }: Props) => {
   );
 };
 
-export default AddNoteDialog;
+export default AddEditNoteDialog;
