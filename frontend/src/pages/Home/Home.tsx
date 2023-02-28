@@ -3,7 +3,7 @@ import { fetchNotes } from "../../redux/slices/notes";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import Note from "../../components/Note/Note";
 import { Container, Row, Col } from "react-bootstrap";
-import styles from './Home.module.scss';
+import styles from "./Home.module.scss";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -12,10 +12,16 @@ const Home = () => {
   React.useEffect(() => {
     dispatch(fetchNotes());
   }, []);
+
+  React.useEffect(() => {
+    if (notes.errorMessage) {
+      console.log(notes.errorMessage);
+      alert(notes.errorMessage);
+    }
+  }, [notes.errorMessage])
   return (
-    <Container>
       <Row xs={1} md={2} xl={3} className="g-4">
-        {notes.items.map((n, idx) => {
+        {notes.items.map((n) => {
           return (
             <Col key={n._id}>
               <Note className={styles.note} note={n} />
@@ -23,7 +29,6 @@ const Home = () => {
           );
         })}
       </Row>
-    </Container>
   );
 };
 

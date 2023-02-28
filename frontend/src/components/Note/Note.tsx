@@ -12,9 +12,9 @@ type Props = {
 const Note = ({ note, className }: Props) => {
   let createdUpdatedText: string;
   if (note.updatedAt > note.createdAt) {
-    createdUpdatedText = 'Updated: ' + formatDate(note.updatedAt);
+    createdUpdatedText = "Updated: " + formatDate(note.updatedAt);
   } else {
-    createdUpdatedText = 'Created: ' + formatDate(note.createdAt);
+    createdUpdatedText = "Created: " + formatDate(note.createdAt);
   }
   return (
     <Card className={`${styles.noteCard} ${className}`}>
