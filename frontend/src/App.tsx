@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
 import AddNoteDialog from "./components/AddNoteDialog/AddEditNoteDialog";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import {
@@ -19,6 +19,9 @@ function App() {
   const dispatch = useAppDispatch();
   const [showAddNoteDialog, setShowAddNoteDialog] = React.useState(false);
   const notes = useAppSelector((state) => state.note);
+  const notesLoading = notes.status === "loading";
+  const showNotesLoadingError = notes.status === "error";
+
   const [noteToEdit, setNoteToEdit] = React.useState<NoteModel | null>(null);
 
   React.useEffect(() => {
@@ -35,14 +38,24 @@ function App() {
     }
   }
 
-  React.useEffect(() => {
-    if (notes.errorMessage) {
-      console.log(notes.errorMessage);
-      alert(notes.errorMessage);
-    }
-  }, [notes.errorMessage]);
+  const noteGrid = (
+    <Row xs={1} md={2} xl={3} className={`g-4 ${styles.noteGrid}`}>
+      {notes.items.map((n) => {
+        return (
+          <Col key={n._id}>
+            <Note
+              className={styles.note}
+              note={n}
+              onNoteClicked={setNoteToEdit}
+              onDeleteNoteClicked={deleteNote}
+            />
+          </Col>
+        );
+      })}
+    </Row>
+  );
   return (
-    <Container>
+    <Container className={styles.notesPage}>
       <Button
         className={`mb-4 ${stylesUtils.blockCenter} ${stylesUtils.flexCenter}`}
         onClick={() => setShowAddNoteDialog(true)}
@@ -50,20 +63,19 @@ function App() {
         <FaPlus />
         Add new note
       </Button>
-      <Row xs={1} md={2} xl={3} className="g-4">
-        {notes.items.map((n) => {
-          return (
-            <Col key={n._id}>
-              <Note
-                className={styles.note}
-                note={n}
-                onNoteClicked={setNoteToEdit}
-                onDeleteNoteClicked={deleteNote}
-              />
-            </Col>
-          );
-        })}
-      </Row>
+      {notesLoading && <Spinner animation="border" variant="primary" />}
+      {showNotesLoadingError && (
+        <p>Something wen't wrong. Please refresh the page</p>
+      )}
+      {!notesLoading && !showNotesLoadingError && (
+        <>
+          {notes.items.length > 0 ? (
+            noteGrid
+          ) : (
+            <p>You don't have any notes yet</p>
+          )}
+        </>
+      )}
       {showAddNoteDialog && (
         <AddNoteDialog
           onNoteSaved={(newNote) => {

@@ -57,7 +57,7 @@ export const counterSlice = createSlice({
     });
     builder.addCase(fetchNotes.fulfilled, (state, action) => {
       state.items = action.payload;
-      state.status = "success";
+      state.status = "loaded";
       state.errorMessage = null;
     });
     builder.addCase(fetchNotes.rejected, (state, action) => {
