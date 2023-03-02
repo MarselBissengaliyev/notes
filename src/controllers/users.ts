@@ -5,6 +5,7 @@ import UserModel from "../models/user";
 
 export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
   const authenticatedUserId = req.session.userId;
+  console.log(authenticatedUserId);
 
   try {
     if (!authenticatedUserId) {
@@ -95,14 +96,17 @@ export const login: RequestHandler<
       throw createHttpError(400, "Parameters missing");
     }
 
+    console.log(username, password);
+
     const user = await UserModel.findOne({ username: username })
       .select("+password +email")
       .exec();
 
+
     if (!user) {
       throw createHttpError(401, "Invalid credentials");
     }
-
+    console.log(password, user.password);
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {

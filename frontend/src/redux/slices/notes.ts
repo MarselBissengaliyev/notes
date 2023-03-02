@@ -1,21 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Note } from "../../models/note";
 import axios from "../../axios";
-import * as NotesApi from "../../network/notes_api";
-import { Note as NoteModel } from "../../models/note";
 
-export const fetchNotes = createAsyncThunk("notes/fetchNotes", async () => {
-  const { data } = await axios.get("/api/notes");
-  console.log(data);
-  return data as Note[];
-});
+export const fetchNotes = createAsyncThunk(
+  "notes/fetchNotes",
+  async (): Promise<Note[]> => {
+    const { data } = await axios.get("/api/notes");
+    return data;
+  }
+);
 
 export const fetchCreateNotes = createAsyncThunk(
   "notes/fetchNotes",
-  async () => {
+  async (): Promise<Note> => {
     const { data } = await axios.get("/api/notes");
-    console.log(data);
-    return data as Note[];
+    return data;
   }
 );
 
@@ -31,7 +30,7 @@ const initialState: NoteState = {
   errorMessage: null,
 };
 
-export const counterSlice = createSlice({
+export const noteSlice = createSlice({
   name: "notes",
   initialState,
   reducers: {
@@ -62,7 +61,6 @@ export const counterSlice = createSlice({
     });
     builder.addCase(fetchNotes.rejected, (state, action) => {
       if (action.error.message) {
-        console.log(action);
         state.errorMessage = action.error.message;
       }
       state.items = [];
@@ -71,6 +69,6 @@ export const counterSlice = createSlice({
   },
 });
 
-export default counterSlice.reducer;
+export default noteSlice.reducer;
 export const { deleteNoteAction, pushNoteAction, editNoteAction } =
-  counterSlice.actions;
+  noteSlice.actions;
