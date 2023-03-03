@@ -11,13 +11,15 @@ import styles from "./styles/App.module.scss";
 
 function App() {
   const dispatch = useAppDispatch();
-  const { loggedInUser, status } = useAppSelector((state) => state.user);
+  const { loggedInUser, status, errorMessage } = useAppSelector((state) => state.user);
 
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   useEffect(() => {
+    console.log(errorMessage);
     dispatch(fetchLoggedInUser());
   }, []);
+  
   return (
     <>
       <NavBar

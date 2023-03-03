@@ -1,23 +1,33 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "../../axios";
 import { User } from "../../models/user";
+import * as NotesApi from "../../network/notes_api";
 
 export const fetchLoggedInUser = createAsyncThunk(
   "users/fetchLoggedInUser",
-  async (): Promise<User> => {
-    const { data } = await axios.get("/api/users");
-    return data;
+  async (obj, {rejectWithValue}) => {
+    try {
+      const response = await NotesApi.getlLoggedInUser();
+      return response;
+    } catch (err: any) {
+      if (!err.response) {
+        throw err;
+      }
+
+      return rejectWithValue(err.response.data);
+    }
   }
 );
 
 export interface UserState {
   loggedInUser: User | null;
   status: string;
+  errorMessage: string
 }
 
 const initialState: UserState = {
   loggedInUser: {} as User | null,
   status: "loading",
+  errorMessage: ""
 };
 
 export const userSlice = createSlice({
@@ -40,6 +50,7 @@ export const userSlice = createSlice({
     builder.addCase(fetchLoggedInUser.rejected, (state, action) => {
       state.loggedInUser = null;
       state.status = "error";
+      state.errorMessage = action.error.message || ""; 
     });
   },
 });

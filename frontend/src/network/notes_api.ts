@@ -1,26 +1,25 @@
-import { Note } from "../models/note";
-import axios from "../axios";
 import { AxiosRequestConfig } from "axios";
+import axios from "../axios";
+import { Note } from "../models/note";
 import { User } from "../models/user";
 
 async function fetchData(input: string, init: AxiosRequestConfig) {
-  // console.log("Status TEXT=  ", response.statusText);
-  // if (!response.data.error) {
-  //   return response;
-  // } else {
-  //   const errorBody = await response.data;
-  //   const errorMessage = errorBody.error;
-  //   throw Error(errorMessage);
-  // }
-
   try {
     const response = await axios(input, init);
     return response;
   } catch (error: any) {
-    const errorBody = error.response.data.error;
-    const errorMessage = errorBody;
+    const errorBody = error.response.data;
+    const errorMessage = errorBody.error;
     throw Error(errorMessage);
   }
+}
+
+export async function getlLoggedInUser(): Promise<User> {
+  const response = await fetchData("/api/users", {
+    method: "GET",
+  });
+
+  return response.data;
 }
 
 export interface SignUpCredentials {
