@@ -2,15 +2,23 @@ import { AxiosRequestConfig } from "axios";
 import axios from "../axios";
 import { Note } from "../models/note";
 import { User } from "../models/user";
+import { ConflictError, UnauthorizedError } from "../errors/http-errors";
 
 async function fetchData(input: string, init: AxiosRequestConfig) {
   try {
     const response = await axios(input, init);
     return response;
   } catch (error: any) {
+    console.log(error);
     const errorBody = error.response.data;
     const errorMessage = errorBody.error;
-    throw Error(errorMessage);
+    if (error.response.status === 401)  {
+      throw new UnauthorizedError(errorMessage);
+    } else if (error.response.status === 409) {
+      throw new ConflictError(errorMessage);
+    } else {
+      throw Error("Request failed with status: " + error.response.status);
+    }
   }
 }
 
